@@ -2,38 +2,36 @@ package com.jeramyadams.aiscreenreader;
 
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
-import android.util.Log;
+import android.widget.Toast;
+import android.os.Handler;
+import android.os.Looper;
 
 public class AIScreenReaderService extends AccessibilityService {
-    private static final String TAG = "AIScreenReader";
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        // This will pop up on your screen the moment the service binds
+        showToast("AIScreenReader: CONNECTED!");
+    }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        AccessibilityNodeInfo rootNode = getRootInActiveWindow();
-        if (rootNode == null) return;
-
-        // Recursively traverse and capture all visible text nodes
-        analyzeNode(rootNode);
-        rootNode.recycle();
-    }
-
-    private void analyzeNode(AccessibilityNodeInfo node) {
-        if (node == null) return;
-
-        if (node.getText() != null) {
-            String text = node.getText().toString();
-            // Output text directly to logcat for visual inspection
-            Log.d(TAG, "Captured Screen Text: " + text);
-        }
-
-        for (int i = 0; i < node.getChildCount(); i++) {
-            analyzeNode(node.getChild(i));
+        // This will trigger a popup when the screen changes
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            showToast("AIScreenReader: Screen changed!");
         }
     }
 
     @Override
     public void onInterrupt() {
-        Log.d(TAG, "Service Interrupted");
+        showToast("AIScreenReader: Interrupted");
+    }
+
+    // Helper to ensure Toasts run on the main UI thread, preventing crashes
+    private void showToast(String msg) {
+        new Handler(Looper.getMainLooper()).post(() -> 
+            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show()
+        );
     }
 }
