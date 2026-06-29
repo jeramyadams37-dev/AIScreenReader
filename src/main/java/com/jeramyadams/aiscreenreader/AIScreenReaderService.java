@@ -2,21 +2,20 @@ package com.jeramyadams.aiscreenreader;
 
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
-import android.os.Bundle;
 
 public class AIScreenReaderService extends AccessibilityService {
     
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
-        announce("Service successfully connected and ready.");
+        announce("Service connected and ready.");
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             CharSequence text = event.getText().toString();
-            if (text.length() > 5 && !text.toString().contains("Recent apps")) {
+            if (text != null && text.length() > 5 && !text.toString().contains("Recent apps")) {
                 announce("New window: " + text);
             }
         }
@@ -27,7 +26,8 @@ public class AIScreenReaderService extends AccessibilityService {
         event.setClassName(getClass().getName());
         event.setPackageName(getPackageName());
         event.getText().add(text);
-        sendAccessibilityEvent(event);
+        // Corrected call using super
+        super.sendAccessibilityEvent(event);
     }
 
     @Override
