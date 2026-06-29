@@ -3,6 +3,12 @@
     package="com.jeramyadams.aiscreenreader">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 
     <application
         android:name=".ReaderApp"
@@ -10,7 +16,6 @@
         android:label="AIScreenReader"
         android:supportsRtl="true">
         
-        <!-- The launchable UI screen -->
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
