@@ -2,68 +2,27 @@ package com.jeramyadams.aiscreenreader;
 
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
-import android.speech.tts.TextToSpeech;
-import android.media.ToneGenerator;
-import android.media.AudioManager;
-import java.util.Locale;
 
-public class AIScreenReaderService extends AccessibilityService implements TextToSpeech.OnInitListener {
+public class AIScreenReaderService extends AccessibilityService {
     
-    private TextToSpeech tts;
-    private boolean isTtsReady = false;
-    private ToneGenerator toneGen;
-
     @Override
-    public void onCreate() {
-        super.onCreate();
-        // Initialize TTS and a hardware beeper at 100% media volume
-        tts = new TextToSpeech(this, this);
-        toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-    }
-
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            tts.setLanguage(Locale.US);
-            isTtsReady = true;
-            speak("Audio system ready.");
+    protected void onServiceConnected() {
+        try {
+            super.onServiceConnected();
+            // Literally doing nothing. Just trying to survive the connection.
+        } catch (Throwable t) {
+            // Swallow any errors to prevent the "keeps stopping" dialog
         }
     }
 
     @Override
-    protected void onServiceConnected() {
-        super.onServiceConnected();
-        // BEEP INSTANTLY: Proves the system bound to the service
-        if (toneGen != null) toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 200);
-    }
-
-    @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        // BEEP on screen change: Proves events are being received
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            if (toneGen != null) toneGen.startTone(ToneGenerator.TONE_PROP_BEEP_SHORT, 100);
-            speak("Screen changed.");
+        try {
+            // Doing nothing with the events yet
+        } catch (Throwable t) {
         }
     }
 
     @Override
     public void onInterrupt() {}
-
-    private void speak(String text) {
-        if (isTtsReady && tts != null) {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        }
-        if (toneGen != null) {
-            toneGen.release();
-        }
-        super.onDestroy();
-    }
 }
