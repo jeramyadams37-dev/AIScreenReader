@@ -20,6 +20,13 @@ apply plugin: 'com.android.application'
 android {
     namespace 'com.jeramyadams.aiscreenreader'
     compileSdk 34
+
+    sourceSets {
+        main {
+            manifest.srcFile 'app/src/main/AndroidManifest.xml'
+        }
+    }
+
     defaultConfig {
         applicationId "com.jeramyadams.aiscreenreader"
         minSdk 26
