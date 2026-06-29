@@ -3,22 +3,18 @@ package com.jeramyadams.aiscreenreader;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
 import android.speech.tts.TextToSpeech;
-import android.media.ToneGenerator;
-import android.media.AudioManager;
 import java.util.Locale;
 
 public class AIScreenReaderService extends AccessibilityService implements TextToSpeech.OnInitListener {
     
     private TextToSpeech tts;
     private boolean isTtsReady = false;
-    private ToneGenerator toneGen;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        // Initialize TTS and a hardware beeper at 100% media volume
+        // Initialize the text-to-speech engine
         tts = new TextToSpeech(this, this);
-        toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
     }
 
     @Override
@@ -26,28 +22,29 @@ public class AIScreenReaderService extends AccessibilityService implements TextT
         if (status == TextToSpeech.SUCCESS) {
             tts.setLanguage(Locale.US);
             isTtsReady = true;
-            speak("Audio system ready.");
+            speak("Diagnostic audio system online.");
         }
     }
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
-        // BEEP INSTANTLY: Proves the system bound to the service
-        if (toneGen != null) toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 200);
+        // This fires when you toggle it ON in settings
+        speak("Service bound successfully.");
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        // BEEP on screen change: Proves events are being received
+        // Trigger speech when you change screens/apps
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            if (toneGen != null) toneGen.startTone(ToneGenerator.TONE_PROP_BEEP_SHORT, 100);
             speak("Screen changed.");
         }
     }
 
     @Override
-    public void onInterrupt() {}
+    public void onInterrupt() {
+        // Required method, doing nothing for now
+    }
 
     private void speak(String text) {
         if (isTtsReady && tts != null) {
@@ -60,9 +57,6 @@ public class AIScreenReaderService extends AccessibilityService implements TextT
         if (tts != null) {
             tts.stop();
             tts.shutdown();
-        }
-        if (toneGen != null) {
-            toneGen.release();
         }
         super.onDestroy();
     }
