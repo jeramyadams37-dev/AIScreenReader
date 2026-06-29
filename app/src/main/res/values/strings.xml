@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AIScreenReader</string>
+    <string name="service_description">AIScreenReader Service</string>
+</resources>
