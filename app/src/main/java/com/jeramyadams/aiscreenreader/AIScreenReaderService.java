@@ -2,36 +2,62 @@ package com.jeramyadams.aiscreenreader;
 
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.Toast;
-import android.os.Handler;
-import android.os.Looper;
+import android.speech.tts.TextToSpeech;
+import java.util.Locale;
 
-public class AIScreenReaderService extends AccessibilityService {
+public class AIScreenReaderService extends AccessibilityService implements TextToSpeech.OnInitListener {
+    
+    private TextToSpeech tts;
+    private boolean isTtsReady = false;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // Initialize the text-to-speech engine
+        tts = new TextToSpeech(this, this);
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLanguage(Locale.US);
+            isTtsReady = true;
+            speak("Diagnostic audio system online.");
+        }
+    }
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
-        // This will pop up on your screen the moment the service binds
-        showToast("AIScreenReader: CONNECTED!");
+        // This fires when you toggle it ON in settings
+        speak("Service bound successfully.");
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        // This will trigger a popup when the screen changes
+        // Trigger speech when you change screens/apps
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            showToast("AIScreenReader: Screen changed!");
+            speak("Screen changed.");
         }
     }
 
     @Override
     public void onInterrupt() {
-        showToast("AIScreenReader: Interrupted");
+        // Required method, doing nothing for now
     }
 
-    // Helper to ensure Toasts run on the main UI thread, preventing crashes
-    private void showToast(String msg) {
-        new Handler(Looper.getMainLooper()).post(() -> 
-            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show()
-        );
+    private void speak(String text) {
+        if (isTtsReady && tts != null) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
     }
 }
