@@ -8,31 +8,21 @@ buildscript {
     }
 }
 
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 apply plugin: 'com.android.application'
 
 android {
     namespace 'com.jeramyadams.aiscreenreader'
-    compileSdk 35
+    compileSdk 34
     defaultConfig {
         applicationId "com.jeramyadams.aiscreenreader"
         minSdk 26
-        targetSdk 35
-        versionCode 1
-        versionName "1.0"
-    }
-    sourceSets {
-        main {
-            manifest.srcFile 'app/src/main/AndroidManifest.xml'
-            java.srcDirs = ['app/src/main/java']
-            res.srcDirs = ['app/src/main/res']
-        }
-    }
-}
-
-android {
-    sourceSets {
-        main {
-            assets.srcDirs = ['src/main/assets']
-        }
+        targetSdk 34
     }
 }
